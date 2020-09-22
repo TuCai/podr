@@ -17,24 +17,36 @@
 #' @param con The connection to PODR. Use connect_podr to establish a connection, or specify a variable
 #' containing the proper PostgreSQL connection into PODR yourself
 #'
+#' @export
+#' @importFrom DBI dbGetQuery
+#' @importFrom dplyr mutate_at
+#' @importFrom assertthat assert_that
+#' @import magrittr 
+#' 
 #' @return The desired dataset as a data.frame
 #'
 #' @examples
-#' 
+#'\dontrun{
+#' conn_podr()
 #' read_podr('adae', libname='cdisc_pilot_adam')
 #' read_podr('ae', libname='cdisc_pilot_sdtm')
 #' read_podr('ae', libname='janssen_synthetic')
+#'}
 #'
+#' @author Hanming Tu
+#' @name read_podr
+
 # Code History
 #   09/22/2020 (htu) - initial coding based on 
 #     https://github.com/phuse-org/CSS2020-Hackathon/blob/master/TFL/R/podr_connections.R
+# SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'
 #
 
 read_podr <- function(dataset, 
                       libname=c('cdisc_pilot_adam', 'cdisc_pilot_sdtm', 'janssen_synthetic'), 
                       con=getOption('podr_connection')) {
   
-  require('magrittr')
+#  require('magrittr')
   
   # Make sure the dataset name is a character string
   assertthat::assert_that(is.character(dataset))

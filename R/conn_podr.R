@@ -1,4 +1,4 @@
-#' Make a connection to PODR
+#' Make a connection to PHUSE Open Data Repository (PODR)
 #'
 #' This function will set a PODR connection within the 'podr_connection' 
 #' option. Ideally, you shouldn't need to worry about this after it's set. 
@@ -14,13 +14,20 @@
 #' @param port is port number defaults to "5432"
 #' @param database is database name defaults to "nihpo"
 #'
+#' @importFrom DBI dbConnect
+#' @importFrom rstudioapi askForPassword
+#'
 #' @return Nothing - sets the 'podr_connection' option
 #'
 #' @examples
-#' conn_podr();
-#' conn_podr('my_username','my_pwd')
-#' 
-#' 
+#'\dontrun{
+#'   conn_podr()   # require user to provide name and password interactively
+#'   conn_podr('my_username','my_pwd')
+#'}
+#'
+#' @author Hanming Tu
+#' @name conn_podr
+#
 # Code History
 #   09/22/2020 (htu) - initial coding based on 
 #     https://github.com/phuse-org/CSS2020-Hackathon/blob/master/TFL/R/podr_connections.R
