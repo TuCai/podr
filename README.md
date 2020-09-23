@@ -23,6 +23,7 @@ Once you install it, you can start app by issuing the below command in RStudio:
 ## Version 0.0.2
 * Added R Shiny app for easily logging into PODR database and explore datasets
 * Modified *conn_podr* and *read_podr* functions to be used with the app
+* Added *echo_msg*, *is_emnpty*, *resolve*, and *start_app* functions
 
 ## Version 0.0.1
 * Added *conn_podr* function to connect to PODR database
