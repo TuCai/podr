@@ -49,20 +49,24 @@ read_podr <- function(dataset,
                       query_string = NULL
                       ) {
   
-#  require('magrittr')
-  if (is.null(dataset) ) {
-    stop('Please provide dataset name.')
-  }
-  # Make sure the dataset name is a character string
-  assertthat::assert_that(is.character(dataset))
+  #  require('magrittr')
   
   # Connection must be set first
   if (is.null(con)) {
     stop('Please use the `conn_podr` function before using read_podr.')
   }
   
+  # dataset or query_string is required
+  if (is.null(dataset) && is.null(query_string)) {
+    stop('Please provide dataset name or query_string.')
+  }
+  # Make sure the dataset name is a character string
+  if (! is.null(dataset)) {
+    assertthat::assert_that(is.character(dataset))
+  }
+  
   # Establish the dataset prefix for files in PODR
-  libname <- match.arg(libname)
+  # libname <- match.arg(libname)
   
   # Dictionary of libraries to read from PODR
   libs <- c('cdisc_pilot_adam'='virtual_css_2020_adam_', 

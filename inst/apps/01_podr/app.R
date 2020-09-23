@@ -18,7 +18,9 @@
 # pwd <- 'bGopEaaIQ7uB'
 # cp <- conn_podr(usr, pwd);
 # rd <- read_podr('ae', libname = 'cdisc_pilot_sdtm', con =  cp)
-#
+# conn_podr(usr, pwd) %>% read_podr('ae', libname = 'cdisc_pilot_sdtm', con = .)
+# qry <- "SELECT * FROM information_schema.tables WHERE table_schema = 'public'"
+# conn_podr(usr, pwd) %>% read_podr('ae', libname = 'cdisc_pilot_sdtm', con = ., query_string = qry)
 
 library(shiny)
 library(shinydashboard)
@@ -107,8 +109,6 @@ server <- function(input, output, session) {
   
   # -------------------- 1 tabPanel: SetDB  --------------------------------
   get_conn <- reactive ({
-    con <- getOption('podr_connection')
-    if (is.null(con)) {
       validate(
         need(input$username != "", "Please provide Database User Name.")
       )
@@ -117,17 +117,22 @@ server <- function(input, output, session) {
       )
       req(input$username)
       req(input$userpwd)
-      con <- conn_podr(input$username, input$userpwd)
-    }
-    con 
+      conn_podr(input$username, input$userpwd)
   })
   
   qry <- "SELECT * FROM information_schema.tables WHERE table_schema = 'public'";
   
   get_tb_names <- reactive ({
+    str(qry)
     get_conn() %>% 
-      read_podr(input$dataset,con = ., libname = input$libname
-                , query_string = qry);
+      read_podr("xx",  libname = "yy", con = ., query_string = qry );
+  })
+  
+  cls <- reactive({
+    cc <- get_tb_names();
+    #c1 <- cc[which(cc$db==input$db),]; c2 <- as.list(sort(c1$collection))
+    # c("__Select__"='', c2)
+    cc
   })
   
   output$DT1 <- renderDataTable({
@@ -146,7 +151,7 @@ server <- function(input, output, session) {
                    , submitButton("Show", icon("refresh"))      
              )
              , hr()
-             , h1(get_title())
+             , h1("Public Tables")
              , DT::dataTableOutput("DT1")
     )
   })
@@ -162,20 +167,20 @@ server <- function(input, output, session) {
       read_podr(input$dataset,con = ., libname = input$libname);
   })
   
-  get_tb_names <- reactive ({
-    get_conn() %>% 
-      read_podr(input$dataset,con = ., libname = input$libname);
-  })
-
   get_ds_name <- reactive ({ input$dataset})
+  
+  get_lib_name <- reactive ({ 
+    libname <- 'cdisc_pilot_sdtm'
+    if (! is.null(input$libname)) {libname <- input$libname}
+    libname
+    })
   
   get_title <- reactive ({
     paste(toupper(input$dataset), toupper(input$libname), sep = " from ")
   })
 
   output$DT2 <- renderDataTable({
-    # d <- get_dataset();
-    d <- get_tb_names();
+    d <- get_dataset();
     if (length(d) < 1 || is.null(d) || is.na(d)) { d <- data.frame() }
     datatable(d);  
   })
@@ -184,14 +189,10 @@ server <- function(input, output, session) {
     tabPanel("Show"
              , div(id = "form"
                    , style="display:inline-block"
-                   , textInput("username", "Database User Name *", value = "phuse_su67e99huj" )
-                   , bsAlert("alert")
-                   , textInput("userpwd", "Database User Password *", value = "bGopEaaIQ7uB" )
-                   , bsAlert("alert")
                    , textInput("dataset", "Dataset Name", value = get_ds_name() )
                    , selectInput("libname", "Library Name"
                                  , choices = lib_list
-                                 , selected = "cdisc_pilot_sdtm")
+                                 , selected = get_lib_name())
                    , submitButton("Show", icon("refresh"))      
              )
              , hr()
