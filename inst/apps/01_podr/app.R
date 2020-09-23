@@ -36,7 +36,7 @@ library(stringr)
 library(podr)
 library(tibble)
 
-is_empty <- phuse::is_empty;
+is_empty <- podr::is_empty;
 
 header <- dashboardHeader(
   title = "Display PODR Datasets"
@@ -48,7 +48,7 @@ sidebar <- dashboardSidebar(
     id = "tab1",
     menuItem("PODR", icon = icon("cog"),
         menuSubItem("PODR in GitHub", href = 'https://github.com/phuse-org/PODR', newtab = TRUE)
-      , menuSubItem("About this Package", href = 'install_phuse_pkg.png', newtab = TRUE)
+      , menuSubItem("About this Package", href = 'https://github.com/TuCai/podr', newtab = TRUE)
       , menuSubItem('Source Code',href='https://github.com/TuCai/podr/blob/master/inst/apps/01_podr/app.R', newtab = TRUE)
     )
     , style = "background-color: blue; "
@@ -86,7 +86,7 @@ ui <- dashboardPage(
     , fluidRow(
       tabItem("tab1", hr()
               , menuItem("PODR in GitHub", icon=icon('code'), href = 'https://github.com/phuse-org/PODR', newtab = TRUE)
-              , menuItem("About this Package", icon=icon('code'), href = 'install_phuse_pkg.png', newtab = TRUE)
+              , menuItem("About this Package", icon=icon('code'), href = 'https://github.com/TuCai/podr', newtab = TRUE)
               , menuItem('Source Code',icon=icon('code'), href='https://github.com/TuCai/podr/blob/master/inst/apps/01_podr/app.R', newtab = TRUE)
               , hr()
       )
