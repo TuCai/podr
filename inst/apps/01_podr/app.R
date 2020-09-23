@@ -80,7 +80,6 @@ ui <- dashboardPage(
     , fluidRow(tabsetPanel(id='tabs'
                            , tabPanel("Login", uiOutput("tabP1"))
                            , tabPanel("Show", uiOutput("tabP2"))
-                           , tabPanel("View", uiOutput("tabP3"))
     ))
     #    , bsAlert(inputID = "alert_anchor")
     # , tabItems(
@@ -213,14 +212,8 @@ server <- function(input, output, session) {
     )
   })
   
-  # -------------------- 3 tabPanel: View  ----------------------------------
-  output$tabP3 <- renderUI({
-    tabPanel("View"
-             , DT::dataTableOutput("DT2")
-             , hr()
-    )
-  })
-  
+  # --------------------  Obverses ------------------------------------------
+
   observe({
     if(input$showpanel == TRUE) {
       js$showSidebar()

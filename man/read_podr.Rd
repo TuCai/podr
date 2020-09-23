@@ -7,7 +7,8 @@
 read_podr(
   dataset,
   libname = c("cdisc_pilot_adam", "cdisc_pilot_sdtm", "janssen_synthetic"),
-  con = getOption("podr_connection")
+  con = getOption("podr_connection"),
+  query_string = NULL
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ read_podr(
 
 \item{con}{The connection to PODR. Use connect_podr to establish a connection, or specify a variable
 containing the proper PostgreSQL connection into PODR yourself}
+
+\item{query_string}{provides full SQL statement}
 }
 \value{
 The desired dataset as a data.frame
