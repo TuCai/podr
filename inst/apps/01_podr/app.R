@@ -34,6 +34,7 @@ library(DT)
 # library(V8)
 library(stringr)
 library(podr)
+library(tibble)
 
 is_empty <- phuse::is_empty;
 
@@ -120,19 +121,16 @@ server <- function(input, output, session) {
       conn_podr(input$username, input$userpwd)
   })
   
-  qry <- "SELECT * FROM information_schema.tables WHERE table_schema = 'public'";
+  qry <- "SELECT table_name
+            FROM information_schema.tables WHERE table_schema = 'public'";
   
   get_tb_names <- reactive ({
     str(qry)
-    get_conn() %>% 
-      read_podr("xx",  libname = "yy", con = ., query_string = qry );
-  })
-  
-  cls <- reactive({
-    cc <- get_tb_names();
-    #c1 <- cc[which(cc$db==input$db),]; c2 <- as.list(sort(c1$collection))
-    # c("__Select__"='', c2)
-    cc
+    cc <- get_conn() %>% 
+      read_podr("xx",  libname = "yy", con = ., query_string = qry ) %>%
+      add_column(libname = gsub('_[[:alpha:]]+$', '\\1', .[,"table_name"], ignore.case = TRUE )) %>%
+      add_column(dataset = str_extract(.[,"table_name"], '([[:alpha:]]+)$' ));
+    cc[with(cc, order(libname, dataset)),]
   })
   
   output$DT1 <- renderDataTable({
@@ -157,17 +155,27 @@ server <- function(input, output, session) {
   })
   
   # -------------------- 2 tabPanel: Show  --------------------------------
+  # get_cc <- reactive({ c <- get_tb_names();
+  # with(c,aggregate(libname,by=list(libname=libname, dataset=dataset), max));
+  # })
+  # lib_list <- reactive({ cc <- get_cc(); unique(cc$libname); 
+  #  cc[with(cc, order(libname)),]
+  # })
+  
+  ds_list <- reactive({
+    cc <- get_tb_names();
+    c1 <- cc[which(cc$libname==input$libname),]; c2 <- as.list(sort(c1$dataset))
+  })
+  
   lib_list <- list("CDISC Pilot ADaM" = "cdisc_pilot_adam"
                    , "CDISC Pilot SDTM" = "cdisc_pilot_sdtm"
                    , "Janssen Synthetic" = "janssen_synthetic"
-                   )
+                 )
   
   get_dataset <- reactive ({
     conn_podr(input$username, input$userpwd) %>% 
       read_podr(input$dataset,con = ., libname = input$libname);
   })
-  
-  get_ds_name <- reactive ({ input$dataset})
   
   get_lib_name <- reactive ({ 
     libname <- 'cdisc_pilot_sdtm'
@@ -189,10 +197,13 @@ server <- function(input, output, session) {
     tabPanel("Show"
              , div(id = "form"
                    , style="display:inline-block"
-                   , textInput("dataset", "Dataset Name", value = get_ds_name() )
-                   , selectInput("libname", "Library Name"
-                                 , choices = lib_list
+                   # , textInput("dataset", "Dataset Name", value = get_ds_name() )
+                   , selectInput("libname", "Library Name: "
+                                 , choices = lib_list(), multiple = FALSE
                                  , selected = get_lib_name())
+                   , selectInput("dataset", "Dataset Name"
+                                 , choices = ds_list()
+                                 , selected = input$dataset)
                    , submitButton("Show", icon("refresh"))      
              )
              , hr()
