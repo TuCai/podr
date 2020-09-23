@@ -75,8 +75,9 @@ ui <- dashboardPage(
          .form-group { display: table-col;}")
     )
     , fluidRow(tabsetPanel(id='tabs'
-                           , tabPanel("Create", uiOutput("tabP1"))
-                           , tabPanel("View", uiOutput("tabP2"))
+                           , tabPanel("Login", uiOutput("tabP1"))
+                           , tabPanel("Show", uiOutput("tabP2"))
+                           , tabPanel("View", uiOutput("tabP3"))
     ))
     #    , bsAlert(inputID = "alert_anchor")
     # , tabItems(
@@ -103,41 +104,83 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output, session) {
-  ts_content <- reactive({
-    validate(
-      need(input$username != "", "Please provide Database User Name.")
-    )
-    validate(
-      need(input$userpwd != "", "Please provide Database User Password.")
-    )
-    req(input$username)
-    req(input$userpwd)
-    ts <-data.frame(USERNAME=input$username
-                    , USERPWD=input$userpwd
-                    , DATASET=input$dataset
-                    , LIBNAMEF=input$libname
-    );
-    ts
+  
+  # -------------------- 1 tabPanel: SetDB  --------------------------------
+  get_conn <- reactive ({
+    con <- getOption('podr_connection')
+    if (is.null(con)) {
+      validate(
+        need(input$username != "", "Please provide Database User Name.")
+      )
+      validate(
+        need(input$userpwd != "", "Please provide Database User Password.")
+      )
+      req(input$username)
+      req(input$userpwd)
+      con <- conn_podr(input$username, input$userpwd)
+    }
+    con 
   })
   
-  # -------------------- 1 tabPanel: Show  --------------------------------
+  qry <- "SELECT * FROM information_schema.tables WHERE table_schema = 'public'";
   
+  get_tb_names <- reactive ({
+    get_conn() %>% 
+      read_podr(input$dataset,con = ., libname = input$libname
+                , query_string = qry);
+  })
+  
+  output$DT1 <- renderDataTable({
+    d <- get_tb_names();
+    if (length(d) < 1 || is.null(d) || is.na(d)) { d <- data.frame() }
+    datatable(d);  
+  })
+  
+  output$tabP1 <- renderUI({
+    tabPanel("SetDB"
+             , div(id = "form"
+                   , style="display:inline-block"
+                   , textInput("username", "Database User Name *", value = "phuse_su67e99huj" )
+                   , bsAlert("alert")
+                   , textInput("userpwd", "Database User Password *", value = "bGopEaaIQ7uB" )
+                   , submitButton("Show", icon("refresh"))      
+             )
+             , hr()
+             , h1(get_title())
+             , DT::dataTableOutput("DT1")
+    )
+  })
+  
+  # -------------------- 2 tabPanel: Show  --------------------------------
   lib_list <- list("CDISC Pilot ADaM" = "cdisc_pilot_adam"
                    , "CDISC Pilot SDTM" = "cdisc_pilot_sdtm"
                    , "Janssen Synthetic" = "janssen_synthetic"
                    )
-  dataset1  <- reactive ({
-    cp <- conn_podr(input$username, input$userpwd);
-    rd <- read_podr(input$dataset, libname = input$libname, con =  cp)
-    rd 
-  })
-
-  output$DT1 <- renderDataTable({
-    str(dataset1);
-    datatable(dataset1);  
+  
+  get_dataset <- reactive ({
+    conn_podr(input$username, input$userpwd) %>% 
+      read_podr(input$dataset,con = ., libname = input$libname);
   })
   
-  output$tabP1 <- renderUI({
+  get_tb_names <- reactive ({
+    get_conn() %>% 
+      read_podr(input$dataset,con = ., libname = input$libname);
+  })
+
+  get_ds_name <- reactive ({ input$dataset})
+  
+  get_title <- reactive ({
+    paste(toupper(input$dataset), toupper(input$libname), sep = " from ")
+  })
+
+  output$DT2 <- renderDataTable({
+    # d <- get_dataset();
+    d <- get_tb_names();
+    if (length(d) < 1 || is.null(d) || is.na(d)) { d <- data.frame() }
+    datatable(d);  
+  })
+  
+  output$tabP2 <- renderUI({
     tabPanel("Show"
              , div(id = "form"
                    , style="display:inline-block"
@@ -145,22 +188,22 @@ server <- function(input, output, session) {
                    , bsAlert("alert")
                    , textInput("userpwd", "Database User Password *", value = "bGopEaaIQ7uB" )
                    , bsAlert("alert")
-                   , textInput("dataset", "Dataset Name",value = 'ae' )
+                   , textInput("dataset", "Dataset Name", value = get_ds_name() )
                    , selectInput("libname", "Library Name"
                                  , choices = lib_list
-                                 , selected = "cdisc_pilot_adam")
-                   
+                                 , selected = "cdisc_pilot_sdtm")
+                   , submitButton("Show", icon("refresh"))      
              )
-             , submitButton("Show", icon("refresh"))
              , hr()
-             , DT::dataTableOutput("DT1")
+             , h1(get_title())
+             , DT::dataTableOutput("DT2")
     )
   })
   
-  # -------------------- 2 tabPanel: View  ----------------------------------
-  output$tabP2 <- renderUI({
+  # -------------------- 3 tabPanel: View  ----------------------------------
+  output$tabP3 <- renderUI({
     tabPanel("View"
-             , DT::dataTableOutput("DT1")
+             , DT::dataTableOutput("DT2")
              , hr()
     )
   })

@@ -16,6 +16,7 @@
 #' @param libname Library name, one of cdisc_pilot_adam, cdisc_pilot_sdtm, or janssen_synthetic
 #' @param con The connection to PODR. Use connect_podr to establish a connection, or specify a variable
 #' containing the proper PostgreSQL connection into PODR yourself
+#' @param  query_string provides full SQL statement
 #'
 #' @export
 #' @importFrom DBI dbGetQuery
@@ -44,10 +45,14 @@
 
 read_podr <- function(dataset, 
                       libname=c('cdisc_pilot_adam', 'cdisc_pilot_sdtm', 'janssen_synthetic'), 
-                      con=getOption('podr_connection')) {
+                      con=getOption('podr_connection'),
+                      query_string = NULL
+                      ) {
   
 #  require('magrittr')
-  
+  if (is.null(dataset) ) {
+    stop('Please provide dataset name.')
+  }
   # Make sure the dataset name is a character string
   assertthat::assert_that(is.character(dataset))
   
@@ -65,7 +70,9 @@ read_podr <- function(dataset,
             'janssen_synthetic'='virtual_css_2020_synth_')
   
   # Build the query string using the dataset name
-  query_string <- sprintf('select * from public.%s%s', libs[libname], dataset)
+  if (is.null(query_string)) {
+    query_string <- sprintf('select * from public.%s%s', libs[libname], dataset)
+  }
   
   # make the query
   out <- DBI::dbGetQuery(con,query_string) %>% 
