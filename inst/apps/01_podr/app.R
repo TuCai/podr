@@ -20,7 +20,7 @@
 # rd <- read_podr('ae', libname = 'cdisc_pilot_sdtm', con =  cp)
 # conn_podr(usr, pwd) %>% read_podr('ae', libname = 'cdisc_pilot_sdtm', con = .)
 # qry <- "SELECT * FROM information_schema.tables WHERE table_schema = 'public'"
-# conn_podr(usr, pwd) %>% read_podr('ae', libname = 'cdisc_pilot_sdtm', con = ., query_string = qry)
+# tbs <- conn_podr(usr, pwd) %>% read_podr('ae', libname = 'cdisc_pilot_sdtm', con = ., query_string = qry)
 
 library(shiny)
 library(shinydashboard)
@@ -155,33 +155,34 @@ server <- function(input, output, session) {
   })
   
   # -------------------- 2 tabPanel: Show  --------------------------------
-  # get_cc <- reactive({ c <- get_tb_names();
-  # with(c,aggregate(libname,by=list(libname=libname, dataset=dataset), max));
-  # })
+  get_cc <- reactive({ c <- get_tb_names();
+    with(c,aggregate(libname,by=list(libname=libname, dataset=dataset), max));
+    })
   # lib_list <- reactive({ cc <- get_cc(); unique(cc$libname); 
   #  cc[with(cc, order(libname)),]
   # })
+   lib_list <- list("CDISC Pilot ADaM" = "virtual_css_2020_adam"
+                   , "CDISC Pilot SDTM" = "virtual_css_2020_sdtm"
+                   , "Janssen Synthetic" = "virtual_css_2020_synth"
+   )
   
   ds_list <- reactive({
-    cc <- get_tb_names();
+    cc <- get_cc();
+    str(cc)
     c1 <- cc[which(cc$libname==input$libname),]; c2 <- as.list(sort(c1$dataset))
-  })
-  
-  lib_list <- list("CDISC Pilot ADaM" = "cdisc_pilot_adam"
-                   , "CDISC Pilot SDTM" = "cdisc_pilot_sdtm"
-                   , "Janssen Synthetic" = "janssen_synthetic"
-                 )
-  
-  get_dataset <- reactive ({
-    conn_podr(input$username, input$userpwd) %>% 
-      read_podr(input$dataset,con = ., libname = input$libname);
+    c2
   })
   
   get_lib_name <- reactive ({ 
     libname <- 'cdisc_pilot_sdtm'
     if (! is.null(input$libname)) {libname <- input$libname}
     libname
-    })
+  })
+  
+  get_dataset <- reactive ({
+    conn_podr(input$username, input$userpwd) %>% 
+      read_podr(input$dataset,con = ., libname = input$libname);
+  })
   
   get_title <- reactive ({
     paste(toupper(input$dataset), toupper(input$libname), sep = " from ")
@@ -199,9 +200,9 @@ server <- function(input, output, session) {
                    , style="display:inline-block"
                    # , textInput("dataset", "Dataset Name", value = get_ds_name() )
                    , selectInput("libname", "Library Name: "
-                                 , choices = lib_list(), multiple = FALSE
+                                 , choices = lib_list, multiple = FALSE
                                  , selected = get_lib_name())
-                   , selectInput("dataset", "Dataset Name"
+                   , selectInput("dataset", "Dataset Name: ", multiple = FALSE
                                  , choices = ds_list()
                                  , selected = input$dataset)
                    , submitButton("Show", icon("refresh"))      

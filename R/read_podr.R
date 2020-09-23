@@ -75,7 +75,7 @@ read_podr <- function(dataset,
   
   # Build the query string using the dataset name
   if (is.null(query_string)) {
-    query_string <- sprintf('select * from public.%s%s', libs[libname], dataset)
+    query_string <- sprintf('select * from public.%s_%s', libname, dataset)
   }
   
   # make the query
