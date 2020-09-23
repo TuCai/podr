@@ -15,7 +15,7 @@
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/22/2020 (htu) - initial creation
 # usr <- 'phuse_su67e99huj'
-# pwd <- 'bGopEaaIQ7uB'
+# pwd <- 'xxxx'
 # cp <- conn_podr(usr, pwd);
 # rd <- read_podr('ae', libname = 'cdisc_pilot_sdtm', con =  cp)
 # conn_podr(usr, pwd) %>% read_podr('ae', libname = 'cdisc_pilot_sdtm', con = .)
@@ -144,7 +144,7 @@ server <- function(input, output, session) {
                    , style="display:inline-block"
                    , textInput("username", "Database User Name *", value = "phuse_su67e99huj" )
                    , bsAlert("alert")
-                   , textInput("userpwd", "Database User Password *", value = "bGopEaaIQ7uB" )
+                   , passwordInput("userpwd", "Database User Password *" )
                    , submitButton("Show", icon("refresh"))      
              )
              , hr()
