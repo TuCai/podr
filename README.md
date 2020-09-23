@@ -5,20 +5,16 @@ To find out more about PODR, please go to [PODR Github](https://github.com/phuse
 
 # How to Install this package
 
-  '''R 
   install.packages("devtools")
   library(devtools)
   install_github(”TuCai/podr")
-  '''
 
 # How to use it
 
 Once you install it, you can start app by issuing the below command in RStudio:  
 
-  '''R
   library(podr)
   start_app()
-  '''
 
 
 # Code History
