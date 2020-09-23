@@ -13,10 +13,10 @@
 #' @param server is server name in FQDN or IP address defaults to "podr.phuse.global"
 #' @param port is port number defaults to "5432"
 #' @param database is database name defaults to "nihpo"
-#'
+#' @export
 #' @importFrom DBI dbConnect
 #' @importFrom rstudioapi askForPassword
-#'
+#' @importFrom odbc odbc
 #' @return Nothing - sets the 'podr_connection' option
 #'
 #' @examples
@@ -35,7 +35,7 @@
 
 conn_podr <- function(username = NULL, 
                       userpwd = NULL,
-                      driver ="postgresql", 
+                      driver = "postgresql", 
                       server = "podr.phuse.global", 
                       port = "5432", 
                       database = "nihpo"           
@@ -50,7 +50,7 @@ conn_podr <- function(username = NULL,
   
   # Make postgreSQL connection into PODR
   con <- DBI::dbConnect(odbc::odbc(), 
-                        Driver=driver, 
+                        Driver = driver, 
                         Server = server, 
                         Port = port, 
                         Database = database, 
@@ -59,4 +59,5 @@ conn_podr <- function(username = NULL,
                         timeout = 10)
   # Store connection in option
   options('podr_connection'=con)
+  con
 }
