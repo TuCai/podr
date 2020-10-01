@@ -11,7 +11,7 @@ Description: Make it easy to connect, access and review datasets in PHUSE open d
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 URL: https://github.com/TuCai/podr
-BugReports: https://github.com/atorus-research/Tplyr/issues
+BugReports: https://github.com/TuCai/podr/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
