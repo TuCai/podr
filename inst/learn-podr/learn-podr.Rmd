@@ -1,0 +1,160 @@
+---
+title: "Tutorial"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Topic 1
+
+### Exercise 
+
+*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+
+Write the R code required to add two plus two:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+### Exercise with Code
+
+*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+
+Now write a function that adds any two numbers and then call it:
+
+```{r add-function, exercise=TRUE, exercise.lines = 5}
+add <- function() {
+  
+}
+```
+
+## Topic 2
+
+### Exercise with Hint
+
+*Here's an exercise where the chunk is pre-evaulated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+
+Modify the following code to limit the number of rows printed to 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+### Quiz
+
+*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+
+Some questions to verify that you understand the purposes of various base and recommended R packages:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+
+
+
+Test to use a small R Shiny app to demonstrate this function.
+
+```{r, context="setup", include=FALSE}
+# load libraries
+# library(learnr)
+library(shiny)
+library(podr)
+# set options/configuration
+knitr::opts_chunk$set(echo = FALSE)
+
+# load data
+cc  <- getOption("podr_tables")
+tbs <- as.list(sort(cc$table_name))
+```
+
+```{r, context="render", echo=FALSE}
+  uiOutput("tabTable")
+  DT::dataTableOutput("DT3")
+```
+
+```{r, context="server"}
+output$DT3 <- renderDataTable({
+    tb <- input$tab;
+    rr <- data.frame()
+    if (is_empty(tb)) { return(datatable(rr)) }
+    rr <- get_table_defs(tb) 
+    datatable(rr)
+  })
+output$tabTable <- renderUI({
+  cc  <- getOption("podr_tables")
+  tbs <- as.list(sort(cc$table_name))
+  selectInput("tab", "Table Name: ", multiple = FALSE, choices = tbs  , selected = input$tab)
+})
+```
+
+
+
+```{r}
+library(shiny)
+library(DT)
+library(shinyjs)
+library(shinyBS)
+library(shinydashboard)
+
+ui <- fluidPage(
+  mainPanel(
+    tabPanel("Table", uiOutput("tabTable"))
+  )
+)
+server <- function(input, output, session) {
+   get_tab_list <- reactive({
+    cc <- getOption("podr_tables")
+    as.list(sort(cc$table_name))
+  })
+   
+ get_title <- reactive ({
+    paste("Table Definition for", toupper(input$tab), sep = " ")
+  })
+
+  output$DT3 <- renderDataTable({
+    tb <- input$tab;
+    rr <- data.frame()
+    if (is_empty(tb)) { return(datatable(rr)) }
+    rr <- get_table_defs(tb) 
+    datatable(rr)
+  })
+  
+  output$tabTable <- renderUI({
+    cc <- getOption("podr_tables")
+    libs <- as.list(unique(sort(cc$libname)))
+    tabPanel("Show"
+             , div(id = "form"
+                   , selectInput("tab", "Table Name: ", multiple = FALSE
+                                 , choices = get_tab_list()  , selected = input$tab)
+             )
+             , hr()
+             , h1(get_title())
+             , DT::dataTableOutput("DT3")
+    )
+  })
+}
+  shinyApp(ui, server)
+```

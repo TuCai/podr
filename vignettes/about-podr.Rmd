@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(podr)
 ```
 
-# Fuction _conn_podr_
+# Function _*conn_podr*_
 
 Database Info: 
 
@@ -29,6 +29,51 @@ Database Info:
         Password: <your password>
 
 ```{r}
-# con  <- conn_podr('','') 
-# str(con)
+  usr <- 'phuse_su67e99huj';
+  pwd <- 'bGopEaaIQ7uB';
+  con  <- conn_podr(usr,pwd) 
+  str(con)
 ```
+
+# Function *read_podr*
+
+```{r}
+  library(tibble)
+  library(stringr)
+  library("DT")
+  # Case 1: use query string to call read_podr 
+  qry <- "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'";
+  c1 <- read_podr(con = con, query_string = qry, limit = 1000 ) %>%
+        add_column(libname = gsub('_[[:alpha:]]+$', '\\1', .[,"table_name"], ignore.case = TRUE )) %>%
+        add_column(dataset = str_extract(.[,"table_name"], '([[:alpha:]]+)$' ))
+  DT::datatable(c1)
+  # Case 2: read record for a table
+  tb <- 'virtual_css_2020_sdtm_ae'
+  c2 <- read_podr(tabname = tb)
+  DT::datatable(c2)
+  # Case 3: read record for a data set in a library/category
+  lb <- 'virtual_css_2020_sdtm';
+  ds <- 'cm'
+  c3 <- read_podr(libname = lb, dataset = ds)
+  DT::datatable(c3)
+  
+```
+
+# Function *get_table_names*
+Calls to *read_podr* and gets a list of tables from PODR. 
+
+```{r}
+  cc <- get_table_names()
+  datatable(cc)
+```
+
+# Function *get_table_defs*
+Calls to *read_podr* and gets table definition for a table in  PODR. 
+
+
+```{r}
+tb <- 'virtual_css_2020_sdtm_ae'
+rr <- get_table_defs(tb) 
+DT::datatable(rr)
+```
+

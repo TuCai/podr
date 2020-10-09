@@ -1,0 +1,12 @@
+name: 01_podr
+title: 01_podr
+username:
+account: geotiger
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2869715
+bundleId: 3711195
+url: https://geotiger.shinyapps.io/01_podr/
+when: 1602043150.7862
+asMultiple: FALSE
+asStatic: FALSE

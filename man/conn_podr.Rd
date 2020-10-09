@@ -30,8 +30,8 @@ conn_podr(
 Nothing - sets the 'podr_connection' option
 }
 \description{
-This function will set a PODR connection within the 'podr_connection' 
-option. Ideally, you shouldn't need to worry about this after it's set. 
+This function will set a PODR connection within the 'podr_connection'
+option. Ideally, you shouldn't need to worry about this after it's set.
 Using the read_podr function will utilize the connection automatically
 by default.
 }

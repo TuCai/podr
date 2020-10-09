@@ -5,10 +5,12 @@
 \title{Read a dataset from PODR}
 \usage{
 read_podr(
-  dataset,
-  libname = c("cdisc_pilot_adam", "cdisc_pilot_sdtm", "janssen_synthetic"),
+  dataset = NULL,
+  libname = NULL,
+  tabname = NULL,
   con = getOption("podr_connection"),
-  query_string = NULL
+  query_string = NULL,
+  limit = 100
 )
 }
 \arguments{
@@ -16,10 +18,14 @@ read_podr(
 
 \item{libname}{Library name, one of cdisc_pilot_adam, cdisc_pilot_sdtm, or janssen_synthetic}
 
+\item{tabname}{Full table name, i.e., the combination of libname and dataset}
+
 \item{con}{The connection to PODR. Use connect_podr to establish a connection, or specify a variable
 containing the proper PostgreSQL connection into PODR yourself}
 
 \item{query_string}{provides full SQL statement}
+
+\item{limit}{to select specified number of records; defaults to 100}
 }
 \value{
 The desired dataset as a data.frame
