@@ -9,6 +9,7 @@
 #' @param ds_sel Dataset name selection pattern
 #' @importFrom tibble add_column
 #' @importFrom stringr str_extract
+# #' @importFrom rlang .data
 #' @export
 #'
 #' @return The selected table names in a data.frame
@@ -27,6 +28,8 @@
 # Code History
 #   10/01/2020 (htu) - initial coding
 #   10/07/2020 (htu) - saved result to "podr_tables"
+#   10/10/2020 (htu) - Did not use %>% so I do not have to deal with global
+#     variable '.' not defined issue
 #
 # SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'
 #
@@ -47,13 +50,17 @@ get_table_names <- function(con=getOption('podr_connection'),
   }
   # get_table_names: no visible binding for global variable ‘.’
   # Undefined global functions or variables: .
-   cc <- read_podr(con = con, query_string = query_string, limit = 1000 ) %>%
-      add_column(libname = gsub('_[[:alpha:]]+$', '\\1', .[,"table_name"], ignore.case = TRUE )) %>%
-      add_column(dataset = str_extract(.[,"table_name"], '([[:alpha:]]+)$' ));
+  # cc <- read_podr(con = con, query_string = query_string, limit = 1000 ) %>%
+  #    add_column(libname = gsub('_[[:alpha:]]+$', '\\1', .data[,"table_name"], ignore.case = TRUE )) %>%
+  #    add_column(dataset = str_extract(.data[,"table_name"], '([[:alpha:]]+)$' ));
 
-  # c1 <- read_podr(con = con, query_string = query_string, limit = 1000 )
-  # c2 <- add_column(libname = gsub('_[[:alpha:]]+$', '\\1', c1[,"table_name"], ignore.case = TRUE ))
-  # cc <- add_column(dataset = str_extract(c2[,"table_name"], '([[:alpha:]]+)$' ));
+  # cc <- read_podr(con = con, query_string = query_string, limit = 1000 ) %>%
+  #   add_column(libname = gsub('_[[:alpha:]]+$', '\\1', .[,'table_name'], ignore.case = TRUE )) %>%
+  #   add_column(dataset = str_extract(.[,'table_name'], '([[:alpha:]]+)$' ));
+
+  c1 <- read_podr(con = con, query_string = query_string, limit = 1000 )
+  c2 <- add_column(c1, libname = gsub('_[[:alpha:]]+$', '\\1', c1[,"table_name"], ignore.case = TRUE ))
+  cc <- add_column(c2, dataset = str_extract(c2[,"table_name"], '([[:alpha:]]+)$' ));
 
   if (! is.null(lib_sel)) { cc <- cc[grepl(lib_sel, cc$libname),];  }
   if (! is.null(ds_sel))  { cc <- cc[grepl(ds_sel, cc$dataset),];   }

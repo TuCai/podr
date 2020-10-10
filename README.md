@@ -20,7 +20,12 @@ Once you install it, you can start app by issuing the below command in RStudio:
 
 
 # Code History
-## Version 0.0.3 ()
+## Version 0.0.4 (10/10/2020)
+* Functions
+** Modified *get_table_names* to fixe '.' global issue
+** Fixed some suggested changes by CRAN
+
+## Version 0.0.3 (10/08/2020)
 * Functions
 ** Added *get_table_names* function to get a list of PODR table names
 ** Added *get_table_defs* function to get table definition
