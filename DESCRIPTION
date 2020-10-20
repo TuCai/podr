@@ -1,15 +1,15 @@
 Package: podr
 Type: Package
-Title: Common Functions for "PHUSE" Open Data Repository
-Version: 0.0.4
+Title: Common Functions for 'PHUSE' Open Data Repository
+Version: 0.0.5
 Author: Hanming Tu [aut, cre]
 Authors@R: c(
   person("Hanming", "Tu", email = "hanming.tu@gmail.com",role = c("aut", "cre"))
   )
 Maintainer: Hanming Tu <hanming.tu@gmail.com>
 Description: Make it easy to connect, access and review datasets in Pharmaceutical
-  User Software Exchange ("PHUSE"") open data repository ("PODR""). The R Shiny 
-  application included in this package allow users to connect to "PODR"" and access to
+  User Software Exchange ('PHUSE') open data repository ('PODR'). The R Shiny 
+  application included in this package allow users to connect to 'PODR' and access to
   over 260 open data sets. 
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
