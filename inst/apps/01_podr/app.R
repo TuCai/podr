@@ -156,7 +156,7 @@ server <- function(input, output, session) {
                    , style="display:inline-block"
                    , textInput("username", "Database User Name *", value = "phuse_su67e99huj" )
                    , bsAlert("alert")
-                   , passwordInput("userpwd", "Database User Password *" )
+                   , passwordInput("userpwd", "Database User Password *", value = "bGopEaaIQ7uB" )
                    , submitButton("Show", icon("refresh"))
              )
              , hr()
